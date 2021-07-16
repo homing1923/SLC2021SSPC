@@ -129,27 +129,9 @@ void loop() {
     int p_delta = 10000;
   }
 }
-int p_sense1(){
-  int fsrVal = analogRead(INPUT_FSR_PIN_1);
-  int freq = map(fsrVal, 0, 1023, 0, 1000);
-  return freq;
-}
 
-int p_sense2(){
-  int fsrVal2 = analogRead(INPUT_FSR_PIN_2);
-  int freq2 = map(fsrVal2, 0, 1023, 0, 1000);
-  return freq2;
-}
 
-void feedbackled(){
-  //
-}
-
-void lcdprintScode(){
-  Serial.println("p_situation=" + p_situation);
-  Serial.println("u_situation=" + u_situation);
-  Serial.println("situation_code=" + situation_code);
-}
+//Logic Related
 
 void PU_check(){
   if (abs(p_data1 - p_data2) >= p_delta){
@@ -173,20 +155,30 @@ void Case_count_check(){
 }
 
 void Case_define(){
-  if (u_situation == 1,p_situation == 0){
-    situation_code = 2;
+  if (u_situation == 1,p_situation == 1){
+    situation_code = 4;
+    u_situation = 0;
     p_situation = 0;
   } else if (u_situation == 0,p_situation == 1){
     situation_code = 3;
     u_situation = 0;
-  }else if (u_situation == 1,p_situation == 1){
-    situation_code = 4;
+  }else if (u_situation == 1,p_situation == 0){
+    situation_code = 1;
     p_situation = 0;
-    u_situation = 0;
   }else{
     situation_code = 1;
   }
   lcdprintScode();
+}
+
+//
+
+//LED print related
+
+void lcdprintScode(){
+  Serial.println("p_situation=" + p_situation);
+  Serial.println("u_situation=" + u_situation);
+  Serial.println("situation_code=" + situation_code);
 }
 
 void ledprint(int p_data1, int p_data2, int s_data){
@@ -209,6 +201,9 @@ void ledprint(int p_data1, int p_data2, int s_data){
   lcd.print("cm");
 }
 
+//
+
+//Data gathering
 
 void data(){
   u_data = u_sense();
@@ -219,6 +214,33 @@ void data(){
     int p_delta = (p_data1 + p_data2)/10;
   }
 }
+
+int u_sense(){
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  duration = pulseIn(echoPin, HIGH);
+  distance = duration * 0.034 / 2;
+  return distance; 
+}
+
+int p_sense1(){
+  int fsrVal = analogRead(INPUT_FSR_PIN_1);
+  int freq = map(fsrVal, 0, 1023, 0, 1000);
+  return freq;
+}
+
+int p_sense2(){
+  int fsrVal2 = analogRead(INPUT_FSR_PIN_2);
+  int freq2 = map(fsrVal2, 0, 1023, 0, 1000);
+  return freq2;
+}
+
+//
+
+//Miscenllaneous Function
 
 void play(){
   for (int thisNote = 0; thisNote < 3; thisNote++) {
@@ -237,13 +259,8 @@ void play(){
   }
 }
 
-int u_sense(){
-  digitalWrite(trigPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  duration = pulseIn(echoPin, HIGH);
-  distance = duration * 0.034 / 2;
-  return distance; 
+void feedbackled(){
+  //
 }
+
+//
