@@ -68,65 +68,7 @@ void setup() {
   p_data2 = p_sense2();
 }
 */
-int p_sense1(){
-  int fsrVal = analogRead(INPUT_FSR_PIN_1);
-  int freq = map(fsrVal, 0, 1023, 0, 1000);
-  return freq;
-}
 
-int p_sense2(){
-  int fsrVal2 = analogRead(INPUT_FSR_PIN_2);
-  int freq2 = map(fsrVal2, 0, 1023, 0, 1000);
-  return freq2;
-}
-
-void feedbackled(){
-  //
-}
-
-void lcdprintScode(){
-  Serial.println("p_situation=" + p_situation);
-  Serial.println("u_situation=" + u_situation);
-  Serial.println("situation_code=" + situation_code);
-}
-
-void PU_check(){
-  if (abs(p_data1 - p_data2) >= p_delta){
-    p_counter = p_counter+1;
-   }
-   if (u_data >= u_delta){
-    u_counter = u_counter+1;
-  }
-}
-
-void Case_count_check(){
-  if (p_counter == p_counteralert){
-    play();
-    p_situation = 1;
-    p_counter = 0;}
-
-  if (u_counter == u_counteralert){
-    play();
-    u_situation = 1;
-    u_counter = 0;}
-}
-
-void Case_define(){
-  if (u_situation = 1,p_situation = 0){
-    situation_code = 2;
-    p_situation = 0;
-  } else if (u_situation = 0,p_situation = 1){
-    situation_code = 3;
-    u_situation = 0;
-  }else if (u_situation = 1,p_situation = 1){
-    situation_code = 4;
-    p_situation = 0;
-    u_situation = 0;
-  }else{
-    situation_code = 1;
-  }
-  lcdprintScode();
-}
 
 void loop() {
   
@@ -138,7 +80,6 @@ void loop() {
   Serial.println(p_data2);
   Serial.print("U=");                
   Serial.println(u_data);
-  
   
   PU_check();
   Case_count_check();
@@ -188,7 +129,65 @@ void loop() {
     int p_delta = 10000;
   }
 }
+int p_sense1(){
+  int fsrVal = analogRead(INPUT_FSR_PIN_1);
+  int freq = map(fsrVal, 0, 1023, 0, 1000);
+  return freq;
+}
 
+int p_sense2(){
+  int fsrVal2 = analogRead(INPUT_FSR_PIN_2);
+  int freq2 = map(fsrVal2, 0, 1023, 0, 1000);
+  return freq2;
+}
+
+void feedbackled(){
+  //
+}
+
+void lcdprintScode(){
+  Serial.println("p_situation=" + p_situation);
+  Serial.println("u_situation=" + u_situation);
+  Serial.println("situation_code=" + situation_code);
+}
+
+void PU_check(){
+  if (abs(p_data1 - p_data2) >= p_delta){
+    p_counter = p_counter+1;
+   }
+   if (u_data >= u_delta){
+    u_counter = u_counter+1;
+  }
+}
+
+void Case_count_check(){
+  if (p_counter == p_counteralert){
+    play();
+    p_situation = 1;
+    p_counter = 0;}
+
+  if (u_counter == u_counteralert){
+    play();
+    u_situation = 1;
+    u_counter = 0;}
+}
+
+void Case_define(){
+  if (u_situation == 1,p_situation == 0){
+    situation_code = 2;
+    p_situation = 0;
+  } else if (u_situation == 0,p_situation == 1){
+    situation_code = 3;
+    u_situation = 0;
+  }else if (u_situation == 1,p_situation == 1){
+    situation_code = 4;
+    p_situation = 0;
+    u_situation = 0;
+  }else{
+    situation_code = 1;
+  }
+  lcdprintScode();
+}
 
 void ledprint(int p_data1, int p_data2, int s_data){
   lcd.init();
