@@ -104,54 +104,10 @@ void loop() {
   Serial.print("U=");                
   Serial.println(u_data);
   delay(300);
-  
-  if (abs(p_data1 - p_data2) >= p_delta){
-    p_counter = p_counter+1;
-   }
-   
-  if (p_counter == p_counteralert){
-    play();
-    p_situation = 1;
-    p_counter = 0;}
-
-  if (u_data >= u_delta){
-    u_counter = u_counter+1;
-  }
-
-  if (u_counter == u_counteralert){
-    play();
-    u_situation = 1;
-    u_counter = 0;}
-
-  if (u_situation == 0,p_situation == 0){
-    situation_code = 1;
-    Serial.println("p_situation=" + p_situation);
-    Serial.println("u_situation=" + u_situation);
-    Serial.println("situation_code=" + situation_code);
-    p_situation = 0;
-    u_situation = 0;
-  } else if (u_situation = 1,p_situation = 0){
-    situation_code = 2;
-    Serial.println("p_situation=" + p_situation);
-    Serial.println("u_situation=" + u_situation);
-    Serial.println("situation_code=" + situation_code);
-    p_situation = 0;
-    u_situation = 0;
-  } else if (u_situation = 0,p_situation = 1){
-    situation_code = 3;
-    Serial.println("p_situation=" + p_situation);
-    Serial.println("u_situation=" + u_situation);
-    Serial.println("situation_code=" + situation_code);
-    p_situation = 0;
-    u_situation = 0;
-  }else if (u_situation = 1,p_situation = 1){
-    situation_code = 4;
-    Serial.println("p_situation=" + p_situation);
-    Serial.println("u_situation=" + u_situation);
-    Serial.println("situation_code=" + situation_code);
-    p_situation = 0;
-    u_situation = 0;
-  }
+  PU_check();
+  Case_count_check();
+  Case_define();
+  reset_situation();
     /*int BTsignal = 1;
 
   if (BTsignal_1 = 1){               test
@@ -196,9 +152,53 @@ void loop() {
   }
 }
 
+void reset_situation(){
+  if(p_situation == 0, u_situation == 0){
+    situation_code = 1;
+  }
+}
+
+void PU_check(){
+  if (abs(p_data1 - p_data2) >= p_delta){
+    p_counter = p_counter+1;
+   }
+   if (u_data >= u_delta){
+    u_counter = u_counter+1;
+  }
+}
+
+void Case_count_check(){
+  if (p_counter == p_counteralert){
+    play();
+    p_situation = 1;
+    p_counter = 0;}
+
+  if (u_counter == u_counteralert){
+    play();
+    u_situation = 1;
+    u_counter = 0;}
+}
+
+void Case_define(){
+  if (u_situation == 1,p_situation == 1){
+    situation_code = 4;
+    u_situation = 0;
+    p_situation = 0;
+  } else if (u_situation == 0,p_situation == 1){
+    situation_code = 3;
+    u_situation = 0;
+  }else if (u_situation == 1,p_situation == 0){
+    situation_code = 2;
+    p_situation = 0;
+  }else{
+    situation_code = 1;
+  }
+}
+
+
 
 void ledprint(int p_data1, int p_data2, int s_data){
-  lcd.init();
+  lcd.begin();
   lcd.backlight();
   lcd.clear();
   lcd.setCursor(0,0);
